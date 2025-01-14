@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renovation Expenses</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 8px; margin-bottom: 5px; }
+        button { padding: 8px 16px; cursor: pointer; background-color: #4CAF50; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Renovation Expenses</h1>
+
+    <h2>Add Expense</h2>
+    <form action="/add" method="POST">
+        <div class="form-group">
+            <label for="Date">Date</label>
+            <input type="text" id="Date" name="Date" required>
+        </div>
+        <div class="form-group">
+            <label for="Item/Service">Item/Service</label>
+            <input type="text" id="Item/Service" name="Item/Service" required>
+        </div>
+        <div class="form-group">
+            <label for="Category (Shop)">Category (Shop)</label>
+            <input type="text" id="Category (Shop)" name="Category (Shop)" required>
+        </div>
+        <div class="form-group">
+            <label for="Cost">Cost</label>
+            <input type="number" id="Cost" name="Cost" required>
+        </div>
+        <div class="form-group">
+            <label for="Notes">Notes</label>
+            <input type="text" id="Notes" name="Notes">
+        </div>
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <h2>Expenses Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Item/Service</th>
+                <th>Category (Shop)</th>
+                <th>Cost</th>
+                <th>Notes</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in data %}
+            <tr>
+                <td>{{ expense["Date"] }}</td>
+                <td>{{ expense["Item/Service"] }}</td>
+                <td>{{ expense["Category (Shop)"] }}</td>
+                <td>{{ expense["Cost"] }}</td>
+                <td>{{ expense["Notes"] }}</td>
+                <td>
+                    <form action="/remove" method="POST" style="display:inline;">
+                        <input type="hidden" name="index" value="{{ loop.index0 }}">
+                        <button type="submit">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Charts</h2>
+    <button onclick="loadChart('bar')">Load Bar Chart</button>
+    <button onclick="loadChart('pie')">Load Pie Chart</button>
+
+    <div id="charts-container"></div>
+
+    <script>
+        function loadChart(type) {
+            fetch('/' + type + '_chart')
+                .then(response => response.json())
+                .then(data => {
+                    const chartContainer = document.getElementById('charts-container');
+                    chartContainer.innerHTML = `<img src="${data.chart_path}" alt="${type} chart" style="max-width:100%; max-height:500px;">`;
+                });
+        }
+    </script>
+
+</body>
+</html>
